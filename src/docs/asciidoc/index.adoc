@@ -1,0 +1,17 @@
+= PetHub API Document
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+
+== 테스트 API
+
+=== 테스트
+
+==== 요청
+
+include::{snippets}/test-controller-test/example/http-request.adoc[]
+
+==== 응답
+include::{snippets}/test-controller-test/example/http-response.adoc[]

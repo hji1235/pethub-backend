@@ -8,7 +8,6 @@ public class PethubApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(PethubApplication.class, args);
-		// 테스트
 	}
 
 }
