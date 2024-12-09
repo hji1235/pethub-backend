@@ -1,5 +1,6 @@
 package com.hji1235.pethub.security.dto;
 
+import com.hji1235.pethub.user.entity.Role;
 import com.hji1235.pethub.user.entity.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,12 +19,7 @@ public class CustomUserDetails implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
 
         Collection<GrantedAuthority> collection = new ArrayList<>();
-        collection.add(new GrantedAuthority() {
-            @Override
-            public String getAuthority() {
-                return user.getRole();
-            }
-        });
+        collection.add((GrantedAuthority) () -> user.getRole().name());
         return collection;
     }
 
@@ -34,7 +30,11 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return user.getUsername();
+        return user.getEmail();
+    }
+
+    public String getEmail() {
+        return user.getEmail();
     }
 
     @Override

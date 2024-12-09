@@ -12,19 +12,30 @@ import java.util.Date;
 @Component
 public class JWTUtil {
 
-    private SecretKey secretKey;
+    private final SecretKey secretKey;
 
-    public JWTUtil(@Value("${spring.jwt.secret}") String secret) {
+    private final long accessTokenExpiredMs;
+
+    private final long refreshTokenExpiredMs;
+
+
+
+
+    public JWTUtil(@Value("${spring.jwt.secret}") String secret,
+                   @Value("${spring.jwt.expired-ms.access-token}") long accessTokenExpiredMs,
+                   @Value("${spring.jwt.expired-ms.refresh-token}") long refreshTokenExpiredMs) {
         this.secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().getAlgorithm());
+        this.accessTokenExpiredMs = accessTokenExpiredMs;
+        this.refreshTokenExpiredMs = refreshTokenExpiredMs;
     }
 
-    public String getUsername(String token) {
+    public String getEmail(String token) {
         return Jwts.parser()
                 .verifyWith(secretKey)
                 .build()
                 .parseSignedClaims(token)
                 .getPayload()
-                .get("username", String.class);
+                .get("email", String.class);
     }
 
     public String getRole(String token) {
@@ -34,15 +45,6 @@ public class JWTUtil {
                 .parseSignedClaims(token)
                 .getPayload()
                 .get("role", String.class);
-    }
-
-    public String getCategory(String token) {
-        return Jwts.parser()
-                .verifyWith(secretKey)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload()
-                .get("category", String.class);
     }
 
     public boolean isExpired(String token) {
@@ -55,15 +57,29 @@ public class JWTUtil {
                 .before(new Date());
     }
 
-    public String createJwt(String category, String username, String role, Long expiredMs) {
+    public long getRefreshTokenExpiredMs() {
+        return refreshTokenExpiredMs;
+    }
+
+    public String createAccessToken(String email, String role) {
         return Jwts.builder()
-                .claim("category", category)
-                .claim("username", username)
+                .claim("email", email)
                 .claim("role", role)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + expiredMs))
+                .expiration(new Date(System.currentTimeMillis() + accessTokenExpiredMs))
                 .signWith(secretKey)
                 .compact();
     }
+
+    public String createRefreshToken(String email) {
+        return Jwts.builder()
+                .claim("email", email)
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + refreshTokenExpiredMs))
+                .signWith(secretKey)
+                .compact();
+    }
+
+
 
 }

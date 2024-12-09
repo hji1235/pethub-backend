@@ -7,6 +7,8 @@ import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Entity
 @Getter
 @NoArgsConstructor
@@ -15,14 +17,14 @@ public class Refresh {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String username;
+    private String email;
 
     private String token;
 
-    private String expiration;
+    private Date expiration;
 
-    public Refresh(String username, String token, String expiration) {
-        this.username = username;
+    public Refresh(String email, String token, Date expiration) {
+        this.email = email;
         this.token = token;
         this.expiration = expiration;
     }

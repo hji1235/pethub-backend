@@ -1,6 +1,7 @@
 package com.hji1235.pethub.user.service;
 
 import com.hji1235.pethub.user.dto.UserJoinRequest;
+import com.hji1235.pethub.user.entity.Role;
 import com.hji1235.pethub.user.entity.User;
 import com.hji1235.pethub.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,16 +20,16 @@ public class JoinService {
 
     @Transactional
     public void join(UserJoinRequest request) {
-        String username = request.getUsername();
+        String email = request.getEmail();
         String password = request.getPassword();
 
-        boolean isExits = userRepository.existsByUsername(username);
+        boolean isExits = userRepository.existsByEmail(email);
 
         if (isExits) {
             return;
         }
 
-        User user = new User(username, passwordEncoder.encode(password), "ROLE_ADMIN");
+        User user = new User(email, passwordEncoder.encode(password), Role.USER);
         userRepository.save(user);
     }
 }

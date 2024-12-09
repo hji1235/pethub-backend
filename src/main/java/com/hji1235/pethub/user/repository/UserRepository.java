@@ -3,8 +3,10 @@ package com.hji1235.pethub.user.repository;
 import com.hji1235.pethub.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UserRepository extends JpaRepository<User, Long> {
-    boolean existsByUsername(String username);
+import java.util.Optional;
 
-    User findByUsername(String username);
+public interface UserRepository extends JpaRepository<User, Long> {
+    boolean existsByEmail(String email);
+
+    Optional<User> findByEmail(String email);
 }

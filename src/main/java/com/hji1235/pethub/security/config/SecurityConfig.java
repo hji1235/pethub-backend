@@ -2,6 +2,7 @@ package com.hji1235.pethub.security.config;
 
 import com.hji1235.pethub.security.filter.CustomLogoutFilter;
 import com.hji1235.pethub.security.filter.JWTFilter;
+import com.hji1235.pethub.security.service.RefreshService;
 import com.hji1235.pethub.security.util.JWTUtil;
 import com.hji1235.pethub.security.filter.LoginFilter;
 import com.hji1235.pethub.security.repository.RefreshRepository;
@@ -27,7 +28,7 @@ public class SecurityConfig {
 
     private final AuthenticationConfiguration configuration;
     private final JWTUtil jwtUtil;
-    private final RefreshRepository refreshRepository;
+    private final RefreshService refreshService;
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
@@ -70,15 +71,15 @@ public class SecurityConfig {
         );
 
         // 로그인 필터 등록
-        http.addFilterAt(new LoginFilter(authenticationManager(configuration), jwtUtil, refreshRepository), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterAt(new LoginFilter(authenticationManager(configuration), jwtUtil, refreshService), UsernamePasswordAuthenticationFilter.class);
 
         // 로그아웃 필터 등록
-        http.addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshRepository), LogoutFilter.class);
+        http.addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshService), LogoutFilter.class);
 
         // 검증 필터 등록
         http.addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class);
         
-        // 세션 설정
+        // 세션 미사용 설정
         http.sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         );

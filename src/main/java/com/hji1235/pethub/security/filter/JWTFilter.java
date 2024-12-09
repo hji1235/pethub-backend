@@ -1,6 +1,7 @@
 package com.hji1235.pethub.security.filter;
 
 import com.hji1235.pethub.security.dto.CustomUserDetails;
+import com.hji1235.pethub.user.entity.Role;
 import com.hji1235.pethub.user.entity.User;
 import com.hji1235.pethub.security.util.JWTUtil;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -26,7 +27,6 @@ public class JWTFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String authorization = request.getHeader("Authorization");
-        System.out.println("authorization = " + authorization);
 
         if (authorization == null || !authorization.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
@@ -44,18 +44,10 @@ public class JWTFilter extends OncePerRequestFilter {
             return;
         }
 
-        String category = jwtUtil.getCategory(token);
-        if (!category.equals("access")) {
-            PrintWriter writer = response.getWriter();
-            writer.print("invalid access token");
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            return;
-        }
-
-        String username = jwtUtil.getUsername(token);
+        String email = jwtUtil.getEmail(token);
         String role = jwtUtil.getRole(token);
 
-        User user = new User(username, "temp", role);
+        User user = new User(email, "temp", Role.valueOf(role));
 
         CustomUserDetails customUserDetails = new CustomUserDetails(user);
         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(customUserDetails,
